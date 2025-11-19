@@ -1,10 +1,68 @@
+
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Studio Object | Premium Interiors Hyderabad</title>
-    <meta name="description" content="Interior architecture for premium homes in Hyderabad. Full-scope interiors, planning, materials, and execution." />
+    <title>Crest Interiors | Premium Interiors Hyderabad</title>
+    <meta name="description" content="Interior architecture for premium homes in Hyderabad. Full-scope interiors, bespoke joinery, planning, materials, and turnkey execution." />
+    <meta name="keywords" content="Interior Designers Hyderabad, Luxury Interiors, Villa Interiors Hyderabad, Apartment Interiors Banjara Hills, Premium Home Design, Turnkey Interiors" />
+    
+    <!-- Geo Tags for Local SEO -->
+    <meta name="geo.region" content="IN-TG" />
+    <meta name="geo.placename" content="Hyderabad" />
+    <meta name="geo.position" content="17.4126;78.4399" />
+    <meta name="ICBM" content="17.4126, 78.4399" />
+    
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:title" content="Crest Interiors | Premium Design Studio" />
+    <meta property="og:description" content="Interior architecture for premium homes in Hyderabad. We design with light first." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80" />
+    
+    <!-- LocalBusiness Schema -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "InteriorDesignOffice",
+        "name": "Crest Interiors",
+        "image": [
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
+        ],
+        "description": "Premium interior design studio in Hyderabad specializing in luxury villas and apartments. We offer space planning, civil work, and bespoke joinery.",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Plot 45, Road No. 12, Banjara Hills",
+          "addressLocality": "Hyderabad",
+          "addressRegion": "Telangana",
+          "postalCode": "500034",
+          "addressCountry": "IN"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 17.4126,
+          "longitude": 78.4399
+        },
+        "telephone": "+919848012345",
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday"
+            ],
+            "opens": "10:00",
+            "closes": "19:00"
+          }
+        ],
+        "priceRange": "₹₹₹"
+      }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,8 +80,8 @@
                 900: '#1A1A1A', // Graphite text
               },
               bronze: {
-                500: '#8A6B4A', // Brass accent
-                600: '#70553A',
+                500: '#AA8853', // Updated warm brass
+                600: '#8A6B4A',
               }
             },
             fontFamily: {
@@ -47,7 +105,7 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
-      /* Grain overlay */
+      /* Grain overlay - Fixed Base64 to prevent invalid URL errors */
       .grain {
         position: fixed;
         top: 0;
@@ -56,8 +114,31 @@
         height: 100%;
         pointer-events: none;
         z-index: 9999;
-        opacity: 0.03;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        opacity: 0.04;
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZmlsdGVyIGlkPSJub2lzZUZpbHRlciI+PGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbm9pc2VGaWx0ZXIpIiBvcGFjaXR5PSIwLjUiLz48L3N2Zz4=");
+      }
+
+      /* Molten Gold Animations - Boosted Contrast */
+      @keyframes molten-vertical {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 0% 200%; }
+      }
+      @keyframes molten-horizontal {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 200% 0%; }
+      }
+
+      .molten-vertical {
+        /* Brighter Gold for better visibility against stone */
+        background: linear-gradient(to bottom, #EBE5DE 0%, #EBE5DE 40%, #D4AF37 50%, #EBE5DE 60%, #EBE5DE 100%);
+        background-size: 100% 300%;
+        animation: molten-vertical 5s linear infinite;
+      }
+      
+      .molten-horizontal {
+        background: linear-gradient(to right, #EBE5DE 0%, #EBE5DE 40%, #D4AF37 50%, #EBE5DE 60%, #EBE5DE 100%);
+        background-size: 300% 100%;
+        animation: molten-horizontal 5s linear infinite;
       }
     </style>
   <script type="importmap">
@@ -76,6 +157,40 @@
 </script>
 </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static fallback for SEO and JS-disabled users -->
+      <div style="padding: 3rem 2rem; font-family: 'Playfair Display', serif; line-height: 1.6; color: #44403C; max-width: 800px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; justify-content: center;">
+        <header style="margin-bottom: 3rem;">
+          <h1 style="font-size: 3rem; font-weight: 500; margin-bottom: 0.5rem;">Crest Interiors.</h1>
+          <p style="font-family: sans-serif; font-size: 1.1rem; color: #8A6B4A; text-transform: uppercase; letter-spacing: 0.1em;">Premium Interiors Hyderabad</p>
+        </header>
+        
+        <main>
+          <section style="margin-bottom: 3rem;">
+            <p style="font-size: 1.25rem; font-weight: 300;">Specializing in full-scope luxury interiors for villas and apartments in Banjara Hills, Jubilee Hills, and Gachibowli.</p>
+          </section>
+
+          <section style="margin-bottom: 3rem;">
+            <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">Our Services</h2>
+            <ul style="font-family: sans-serif; padding-left: 1.2rem;">
+              <li>Space Planning & Civil Modifications</li>
+              <li>Architectural Lighting Design</li>
+              <li>Bespoke Joinery & Wardrobes</li>
+              <li>Material Curation (Italian Marble, Veneers)</li>
+              <li>Turnkey Execution</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">Contact Us</h2>
+            <div style="font-family: sans-serif;">
+              <p><strong>Address:</strong> Plot 45, Road No. 12, Banjara Hills, Hyderabad 500034</p>
+              <p><strong>Phone:</strong> +91 98480 12345</p>
+              <p><strong>Email:</strong> hello@crestinteriors.com</p>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
   </body>
 </html>

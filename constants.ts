@@ -1,5 +1,5 @@
 
-import { Project, Service, ProcessStep, Testimonial } from './types';
+import { Project, Service, ProcessStep, Testimonial, FAQItem } from './types';
 import { PencilRuler, Hammer, Lightbulb, Palette, Layout, CheckCircle } from 'lucide-react';
 
 export const NAV_LINKS = [
@@ -17,7 +17,7 @@ export const PROJECTS: Project[] = [
     type: 'Private Residence',
     highlight: 'Custom Travertine Staircase',
     imageUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=80',
-    size: 'large',
+    size: 'large', // 2x2
     description: "A sanctuary of stone and light. This residence in Jubilee Hills was conceived as a monolithic structure softened by warm interiors.",
     year: "2023",
     area: "6,500 sq.ft",
@@ -48,7 +48,7 @@ export const PROJECTS: Project[] = [
     type: 'Luxury Penthouse',
     highlight: 'Walnut Joinery System',
     imageUrl: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1600&q=80',
-    size: 'large',
+    size: 'medium', // 1x2 vertical
     description: "Perched high above the Financial District, this penthouse required a layout overhaul to maximize the panoramic views while retaining intimacy.",
     year: "2024",
     area: "4,200 sq.ft",
@@ -67,7 +67,7 @@ export const PROJECTS: Project[] = [
     ],
     craftDetails: [
         { image: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=600&q=80", caption: "Book-matched veneer selection." },
-        { image: "https://images.unsplash.com/photo-1507089947368-19c1da97ee9b?auto=format&fit=crop&w=600&q=80", caption: "Seamless flooring transitions." },
+        { image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=80", caption: "Seamless flooring transitions." }, 
         { image: "https://images.unsplash.com/photo-1615529182904-14819c35db37?auto=format&fit=crop&w=600&q=80", caption: "Integrated handle details." },
         { image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4f9d?auto=format&fit=crop&w=600&q=80", caption: "Bronze framed glass partitions." }
     ]
@@ -79,7 +79,7 @@ export const PROJECTS: Project[] = [
     type: '4BHK Interior',
     highlight: 'Minimalist Lighting Plan',
     imageUrl: 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=80',
-    size: 'medium',
+    size: 'medium', // 1x2 vertical to fill row
     description: "Designed for a young family, Serenity House prioritizes calm and durability using a neutral palette and tactile fabrics.",
     year: "2023",
     area: "3,100 sq.ft",
@@ -108,7 +108,7 @@ export const PROJECTS: Project[] = [
     type: 'Commercial Lounge',
     highlight: 'Acoustic Paneling',
     imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80',
-    size: 'medium',
+    size: 'small',
     description: "A private lounge and workspace for a boutique investment firm, focusing on acoustics and privacy.",
     year: "2022",
     area: "1,800 sq.ft",
@@ -136,7 +136,7 @@ export const PROJECTS: Project[] = [
     location: 'Hitech City',
     type: 'Duplex',
     highlight: 'Double-height Curtains',
-    imageUrl: 'https://images.unsplash.com/photo-1556912173-3db996ea0622?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80', 
     size: 'small',
     description: "This duplex renovation focused on connecting the two floors visually using volume and light.",
     year: "2023",
@@ -186,7 +186,12 @@ export const PROJECTS: Project[] = [
         { image: "https://images.unsplash.com/photo-1615529182904-14819c35db37?auto=format&fit=crop&w=600&q=80", caption: "Reclaimed teak joinery." },
         { image: "https://images.unsplash.com/photo-1616137466211-f939a420be84?auto=format&fit=crop&w=600&q=80", caption: "Terracotta jali screens." },
         { image: "https://images.unsplash.com/photo-1616486029423-aaa4789e8c9a?auto=format&fit=crop&w=600&q=80", caption: "Brass inlay flooring details." }
-    ]
+    ],
+    beforeAfter: {
+        beforeImage: "https://images.unsplash.com/photo-1590362835106-4fec839897fb?auto=format&fit=crop&w=1200&q=80", // Construction / Raw State
+        afterImage: "https://images.unsplash.com/photo-1505693314120-0d443867891c?auto=format&fit=crop&w=1200&q=80",   // Finished State
+        label: "Living Room Transformation"
+    }
   },
 ];
 
@@ -282,7 +287,7 @@ export const CRAFT_DETAILS = [
     },
     {
         id: 2,
-        image: "https://images.unsplash.com/photo-1513506003013-d53476017663?auto=format&fit=crop&w=600&q=80",
+        image: "https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?auto=format&fit=crop&w=600&q=80", // Fixed Broken Image
         caption: "Recessed cove lighting with diffused 3000K profile."
     },
     {
@@ -294,5 +299,24 @@ export const CRAFT_DETAILS = [
         id: 4,
         image: "https://images.unsplash.com/photo-1617325247661-675ab4b64ae2?auto=format&fit=crop&w=600&q=80",
         caption: "Soft-close hardware concealed within joinery."
+    }
+];
+
+export const FAQS: FAQItem[] = [
+    {
+        question: "What is your typical project timeline?",
+        answer: "For a full-scope 3BHK or 4BHK interior project in Hyderabad, our timeline is typically 4-6 months from design approval. This includes civil work, joinery fabrication, and final styling. We value precision over speed."
+    },
+    {
+        question: "Do you take up civil modifications?",
+        answer: "Yes. We are not just decorators; we are interior architects. We handle flooring changes, wall breaking/realignment, bathroom renovations, and electrical/plumbing overhauls as part of our turnkey scope."
+    },
+    {
+        question: "How do you charge for your design services?",
+        answer: "We operate on a transparent design-fee plus execution model. Our design fee covers the concept, 3D visualizations, and technical GFC drawings. The execution is billed based on a detailed Bill of Quantities (BOQ) approved by you before work begins."
+    },
+    {
+        question: "What budgets do you typically work with?",
+        answer: "Our turnkey execution services are best suited for budgets starting from ₹40 Lakhs for apartments and ₹80 Lakhs for villas. This ensures we can use the premium materials (veneers, Italian marble, high-grade hardware) that define our aesthetic."
     }
 ];

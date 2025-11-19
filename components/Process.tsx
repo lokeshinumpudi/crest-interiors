@@ -8,24 +8,28 @@ export const Process: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             
             <div className="md:col-span-4">
-                <span className="text-xs font-bold uppercase tracking-widest text-bronze-500 mb-4 block">The Methodology</span>
-                <h2 className="font-serif text-4xl md:text-5xl text-stone-900 mb-6 sticky top-32">
-                    From concept to keys.
-                </h2>
+                <div className="sticky top-32">
+                    <span className="text-xs font-bold uppercase tracking-widest text-bronze-500 mb-4 block">The Methodology</span>
+                    <h2 className="font-serif text-4xl md:text-5xl text-stone-900 mb-6">
+                        From concept to keys.
+                    </h2>
+                </div>
             </div>
 
             <div className="md:col-span-8">
-                <div className="space-y-12 relative">
-                    {/* Vertical line */}
-                    <div className="absolute left-[19px] top-2 bottom-2 w-[1px] bg-stone-300 -z-10 hidden md:block" />
+                <div className="space-y-0 relative">
+                    {/* Molten Liquid Vertical Line */}
+                    <div className="absolute left-[23px] top-0 bottom-0 w-[2px] molten-vertical -z-10 hidden md:block opacity-60" />
 
                     {PROCESS_STEPS.map((step) => (
-                        <div key={step.id} className="flex flex-col md:flex-row gap-6 group">
-                             <div className="w-10 h-10 rounded-full border border-stone-300 bg-stone-50 flex items-center justify-center text-sm font-serif shrink-0 group-hover:border-bronze-500 group-hover:text-bronze-500 transition-colors z-10">
+                        <div key={step.id} className="flex flex-col md:flex-row gap-8 group py-8 relative">
+                             {/* Number Bubble */}
+                             <div className="w-12 h-12 rounded-full border border-stone-200 bg-stone-50 flex items-center justify-center text-sm font-serif shrink-0 group-hover:border-bronze-500 group-hover:text-bronze-500 transition-colors z-10 shadow-sm">
                                  0{step.id}
                              </div>
-                             <div className="pt-1">
-                                 <h3 className="font-serif text-2xl text-stone-900 mb-2 group-hover:text-bronze-600 transition-colors">{step.title}</h3>
+                             
+                             <div className="pt-2 border-b border-stone-200 pb-8 w-full group-last:border-b-0">
+                                 <h3 className="font-serif text-2xl text-stone-900 mb-3 group-hover:text-bronze-600 transition-colors">{step.title}</h3>
                                  <p className="text-stone-600 leading-relaxed max-w-xl">{step.description}</p>
                              </div>
                         </div>

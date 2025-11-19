@@ -1,95 +1,201 @@
-import React, { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, ContactShadows, Environment, SoftShadows, RoundedBox } from '@react-three/drei';
-import * as THREE from 'three';
 
-const ArchitecturalComposition = () => {
-  // Refs for animation
-  const panelRef = useRef<THREE.Mesh>(null);
-  const sphereRef = useRef<THREE.Mesh>(null);
-  const archRef = useRef<THREE.Group>(null);
+import React, { useRef, useMemo } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Environment, SoftShadows } from '@react-three/drei';
+import * as THREE from 'three';
+import { useArt } from '../context/ArtContext';
+
+// --- 1. THE LIQUID PAINT WALL (PROCEDURAL) ---
+const LiquidWall = () => {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const { mode, config } = useArt();
+  
+  // Geometry settings
+  const width = 12;
+  const height = 16;
+  // Optimized segments for performance vs visual quality
+  const segmentsW = 100; 
+  const segmentsH = 100;
+
+  // Create geometry with vertex colors if needed
+  const geometry = useMemo(() => {
+    const geo = new THREE.PlaneGeometry(width, height, segmentsW, segmentsH);
+
+    if (mode === 'paint') {
+        const count = geo.attributes.position.count;
+        const colors = new Float32Array(count * 3);
+        const pos = geo.attributes.position;
+        
+        // Define a vibrant, architectural paint palette
+        const palette = [
+            new THREE.Color('#E74C3C'), // Vivid Red
+            new THREE.Color('#3498DB'), // Blue
+            new THREE.Color('#F1C40F'), // Yellow
+            new THREE.Color('#9B59B6'), // Purple
+            new THREE.Color('#1ABC9C'), // Teal
+            new THREE.Color('#F7F4F0'), // Off-white
+        ];
+
+        for (let i = 0; i < count; i++) {
+             const x = pos.getX(i);
+             // Create "lanes" of color
+             // Normalize x and map to palette index
+             const nX = (x + width/2) / width;
+             const laneNoise = Math.sin(x * 0.5) * 0.1; // Slight wavy lane edges
+             const laneIndex = Math.floor((nX + laneNoise) * 8); // 8 lanes
+             const color = palette[Math.abs(laneIndex) % palette.length];
+             
+             colors[i * 3] = color.r;
+             colors[i * 3 + 1] = color.g;
+             colors[i * 3 + 2] = color.b;
+        }
+        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    }
+    
+    return geo;
+  }, [mode]); // Re-generate when mode switches
+
+  // Generate random offsets for each vertex to break repetition
+  const vertexData = useMemo(() => {
+    const count = geometry.attributes.position.count;
+    const randomOffsets = new Float32Array(count);
+    
+    for (let i = 0; i < count; i++) {
+      randomOffsets[i] = Math.random() * Math.PI * 2;
+    }
+    return { randomOffsets, originalPos: geometry.attributes.position.array };
+  }, [geometry]);
 
   useFrame((state) => {
-    const t = state.clock.getElapsedTime();
+    if (!meshRef.current) return;
+
+    const time = state.clock.getElapsedTime();
+    const { position } = meshRef.current.geometry.attributes;
+    const { randomOffsets, originalPos } = vertexData;
     
-    if (panelRef.current) {
-        // Gentle vertical float for the slab
-        panelRef.current.position.y = 0.5 + Math.sin(t * 0.2) * 0.1;
-        panelRef.current.rotation.y = Math.sin(t * 0.1) * 0.05;
+    for (let i = 0; i < position.count; i++) {
+      const ix = i * 3;
+      const x = originalPos[ix];
+      const y = originalPos[ix + 1];
+      
+      // 1. CONFIGURABLE GRAVITY FLOW
+      // config.flowSpeed controls how fast the paint slides down
+      // 0.15 is base speed
+      const flowTime = time * 0.15 * config.flowSpeed; 
+
+      // 2. PROCEDURAL NOISE LAYERS
+      // config.viscosity changes the 'scale' or frequency of the waves
+      // config.turbulence changes the 'amplitude' of the chaotic noise
+      
+      // Layer A: Large Swells
+      const largeSwell = Math.sin(x * 0.62 * config.viscosity + flowTime) * 
+                         Math.cos(y * 0.27 * config.viscosity + flowTime) * 0.5;
+
+      // Layer B: Rivulets (Vertical streaks)
+      // Paint mode might want distincter rivulets
+      const rivuletFreq = mode === 'paint' ? 4.0 : 2.5;
+      const rivulets = Math.sin(x * rivuletFreq * config.viscosity + randomOffsets[i]) * 
+                       Math.sin((y + flowTime * 1.5) * 0.5);
+
+      // Layer C: Surface Turbulence
+      const turbulence = Math.sin((x * 4.0) + (y * 4.0) + time) * 0.05 * config.turbulence; 
+
+      // Combine
+      const combinedZ = largeSwell + (rivulets * 0.8) + turbulence;
+      
+      position.setZ(i, combinedZ);
     }
-    
-    if (sphereRef.current) {
-        // Independent float for the sphere
-        sphereRef.current.position.y = 2.2 + Math.cos(t * 0.3) * 0.15;
-    }
 
-    if (archRef.current) {
-        // Very slow rotation for the background element
-        archRef.current.rotation.z = -0.1 + Math.sin(t * 0.1) * 0.02;
-    }
-  });
-
-  // Materials - Precise luxury finishes
-  const plasterMaterial = new THREE.MeshStandardMaterial({
-    color: '#F7F4F0', // Lighter stone 50
-    roughness: 0.9,
-    metalness: 0.1,
-  });
-
-  const concreteMaterial = new THREE.MeshStandardMaterial({
-    color: '#D6CCC2', // Stone 200
-    roughness: 0.8,
-    metalness: 0.0,
-  });
-
-  const brassMaterial = new THREE.MeshStandardMaterial({
-    color: '#b78a2c', // Deep rich brass
-    roughness: 0.15,
-    metalness: 1.0,
-    envMapIntensity: 1.5
+    position.needsUpdate = true;
+    meshRef.current.geometry.computeVertexNormals();
   });
 
   return (
-    <group position={[0.5, -1.5, 0]} rotation={[0, -0.3, 0]}>
-      
-      {/* Main Vertical Monolith (Slab) - using RoundedBox for soft luxury edges */}
-      <mesh ref={panelRef} position={[-1, 0.5, 1]} castShadow receiveShadow>
-        <RoundedBox args={[2, 5, 0.2]} radius={0.05} smoothness={4}>
-            <primitive object={concreteMaterial} />
-        </RoundedBox>
-      </mesh>
-
-      {/* The Brass Sphere - The Focus Point */}
-      <mesh ref={sphereRef} position={[0.8, 2.2, 1.5]} castShadow receiveShadow>
-        <sphereGeometry args={[0.7, 64, 64]} />
-        <primitive object={brassMaterial} />
-      </mesh>
-
-      {/* Background Arch / Curved Wall */}
-      <group ref={archRef} position={[-1, 2, -2]} rotation={[0, 0, -0.1]}>
-         <mesh castShadow receiveShadow rotation={[1.5, 0.2, 0]}>
-             <torusGeometry args={[3.5, 0.8, 32, 100, 2]} />
-             <primitive object={plasterMaterial} />
-         </mesh>
-      </group>
-
-      {/* Compositional Balance Element - Low Plinth */}
-      <mesh position={[2, -1, -0.5]} rotation={[0, 0.4, 0]} receiveShadow>
-          <RoundedBox args={[3, 0.5, 3]} radius={0.05} smoothness={4}>
-              <primitive object={plasterMaterial} />
-          </RoundedBox>
-      </mesh>
-
-      <ContactShadows 
-        position={[0, -2, 0]} 
-        opacity={0.5} 
-        scale={20} 
-        blur={2} 
-        far={4} 
-        color="#292524"
-      />
-    </group>
+    <mesh 
+      ref={meshRef} 
+      geometry={geometry}
+      position={[3, 0, -1]} 
+      rotation={[0, -0.25, 0]} 
+      receiveShadow
+      castShadow
+    >
+      {mode === 'gold' ? (
+          <meshPhysicalMaterial 
+            color="#B59457" 
+            roughness={0.15} 
+            metalness={0.7} 
+            clearcoat={1.0} 
+            clearcoatRoughness={0.1}
+            reflectivity={1}
+            envMapIntensity={1.2}
+            side={THREE.DoubleSide}
+          />
+      ) : (
+          <meshPhysicalMaterial 
+            vertexColors={true} // Enable per-vertex coloring
+            roughness={0.2} 
+            metalness={0.1} // Paint is less metallic, more glossy
+            clearcoat={1.0} // High gloss wet paint
+            clearcoatRoughness={0.2}
+            reflectivity={0.5}
+            envMapIntensity={1.0}
+            side={THREE.DoubleSide}
+          />
+      )}
+    </mesh>
   );
+};
+
+// --- 2. DYNAMIC LIGHTING ---
+const DynamicLights = () => {
+  const lightRef = useRef<THREE.SpotLight>(null);
+
+  useFrame((state) => {
+    if (!lightRef.current) return;
+    const t = state.clock.getElapsedTime();
+    lightRef.current.position.x = 4 + Math.sin(t * 0.2) * 3;
+    lightRef.current.position.y = 6 + Math.cos(t * 0.3) * 2;
+  });
+
+  return (
+    <>
+      <spotLight 
+        ref={lightRef}
+        position={[5, 8, 8]} 
+        angle={0.5} 
+        penumbra={0.4} 
+        intensity={1.5} 
+        castShadow 
+        shadow-bias={-0.0001}
+        shadow-mapSize={[1024, 1024]}
+        color="#FFF5E6"
+      />
+      <spotLight position={[-6, 4, -2]} intensity={1.2} color="#e0f2fe" angle={0.6} />
+      <ambientLight intensity={0.3} />
+    </>
+  );
+};
+
+// --- 3. CAMERA PARALLAX ---
+const CameraParallax = () => {
+  const { camera } = useThree();
+
+  useFrame(() => {
+    if (typeof window === 'undefined') return;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) return;
+
+    const scrollY = window.scrollY;
+    if (scrollY > window.innerHeight) return;
+
+    const targetZ = 12 + (scrollY * 0.002);
+    const targetY = 0 - (scrollY * 0.001);
+
+    camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetZ, 0.05);
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, targetY, 0.05);
+  });
+
+  return null;
 };
 
 export const ThreeHero: React.FC = () => {
@@ -97,35 +203,25 @@ export const ThreeHero: React.FC = () => {
     <div className="w-full h-full absolute top-0 left-0 z-0 pointer-events-none">
       <Canvas
         shadows
-        dpr={[1, 1.5]}
-        camera={{ position: [0, 0, 9], fov: 30 }}
-        gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
+        dpr={[1, 1.25]} 
+        camera={{ position: [0, 0, 12], fov: 24 }} 
+        gl={{ 
+          antialias: true, 
+          toneMapping: THREE.ACESFilmicToneMapping, 
+          toneMappingExposure: 1.0 
+        }}
       >
-        <fog attach="fog" args={['#F7F4F0', 5, 20]} />
+        <fog attach="fog" args={['#F7F4F0', 8, 25]} />
         
-        {/* Studio Lighting Setup */}
-        <ambientLight intensity={0.8} color="#ffffff" />
-        <spotLight 
-            position={[5, 8, 5]} 
-            angle={0.4} 
-            penumbra={0.5} 
-            intensity={1} 
-            castShadow 
-            shadow-bias={-0.0001}
-            color="#fffcf0"
-        />
-        <spotLight 
-            position={[-5, 2, -2]} 
-            angle={0.5} 
-            intensity={0.5} 
-            color="#e0f7fa" 
-        />
+        <CameraParallax />
+        <DynamicLights />
+        
+        <Environment preset="city" blur={0.6} background={false} /> 
+        
+        <SoftShadows size={12} samples={8} focus={0.5} />
 
-        {/* Studio Preset for cleaner reflections */}
-        <Environment preset="studio" />
-        <SoftShadows size={8} samples={10} focus={0.5} />
-
-        <ArchitecturalComposition />
+        <LiquidWall />
+        
       </Canvas>
     </div>
   );

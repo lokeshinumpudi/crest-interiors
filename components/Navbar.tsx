@@ -35,13 +35,16 @@ export const Navbar: React.FC = () => {
         scrolled ? 'bg-stone-50/90 backdrop-blur-md py-4 shadow-sm' : 'bg-transparent py-6'
       }`}
     >
-      <div className="container mx-auto px-6 flex justify-between items-center">
+      {/* Molten Bottom Border */}
+      <div className={`absolute bottom-0 left-0 w-full h-[2px] molten-horizontal transition-opacity duration-300 ${scrolled ? 'opacity-100' : 'opacity-0'}`} />
+
+      <div className="container mx-auto px-6 flex justify-between items-center relative">
         <a 
           href="#" 
           onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
           className="text-2xl font-serif font-semibold tracking-tight text-stone-900"
         >
-          Studio Object<span className="text-bronze-500">.</span>
+          Crest Interiors<span className="text-bronze-500">.</span>
         </a>
 
         {/* Desktop Menu */}
@@ -56,13 +59,15 @@ export const Navbar: React.FC = () => {
               {link.name}
             </a>
           ))}
-          <a
+          <motion.a
             href="#contact"
             onClick={(e) => scrollToSection(e, '#contact')}
-            className="bg-stone-900 text-stone-50 px-5 py-2 text-sm uppercase tracking-wider hover:bg-bronze-500 transition-colors duration-300"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-stone-900 text-stone-50 px-5 py-2 text-sm uppercase tracking-wider hover:bg-bronze-500 transition-colors duration-300 cursor-pointer"
           >
             Book Consult
-          </a>
+          </motion.a>
         </div>
 
         {/* Mobile Menu Button */}
@@ -94,13 +99,14 @@ export const Navbar: React.FC = () => {
                   {link.name}
                 </a>
               ))}
-              <a
+              <motion.a
                 href="#contact"
                 onClick={(e) => scrollToSection(e, '#contact')}
+                whileTap={{ scale: 0.98 }}
                 className="inline-block text-center w-full bg-stone-900 text-stone-50 px-5 py-3 uppercase tracking-wider"
               >
                 Book Consult
-              </a>
+              </motion.a>
             </div>
           </motion.div>
         )}

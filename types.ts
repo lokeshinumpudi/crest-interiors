@@ -1,3 +1,4 @@
+
 export interface Project {
   id: string;
   title: string;
@@ -16,6 +17,11 @@ export interface Project {
   challenges?: string;
   solutions?: string;
   craftDetails?: { image: string; caption: string }[];
+  beforeAfter?: {
+    beforeImage: string;
+    afterImage: string;
+    label?: string;
+  };
 }
 
 export interface Service {
@@ -37,4 +43,9 @@ export interface Testimonial {
   author: string;
   location: string;
   image?: string;
+}
+
+export interface FAQItem {
+    question: string;
+    answer: string;
 }

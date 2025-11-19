@@ -3,13 +3,15 @@ import React, { useEffect } from 'react';
 import { Project } from '../types';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { BeforeAfter } from './BeforeAfter';
 
 interface ProjectDetailProps {
   project: Project;
   onClose: () => void;
+  onContact: () => void;
 }
 
-export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onClose }) => {
+export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onClose, onContact }) => {
   
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -25,13 +27,15 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onClose }
     >
       {/* --- NAVIGATION --- */}
       <div className="fixed top-6 left-6 z-50">
-        <button 
-            onClick={onClose} 
+        <motion.button 
+            onClick={onClose}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest bg-white/80 backdrop-blur-md text-stone-900 px-6 py-3 rounded-full shadow-sm hover:bg-stone-900 hover:text-white transition-all duration-300 group"
         >
             <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> 
             Back to Portfolio
-        </button>
+        </motion.button>
       </div>
 
       {/* --- 1. CINEMATIC HERO --- */}
@@ -69,14 +73,21 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onClose }
              </div>
         </div>
       </div>
+      
+      {/* Molten Separator */}
+      <div className="w-full h-[2px] molten-horizontal opacity-60" />
 
       {/* --- 2. SPEC GRID OVERVIEW --- */}
       <div className="bg-white border-b border-stone-100">
           <div className="container mx-auto px-6 max-w-7xl">
-              <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-stone-100">
+              <div className="grid grid-cols-1 md:grid-cols-3 relative">
                   
+                  {/* Vertical Molten Dividers for Grid */}
+                  <div className="hidden md:block absolute left-1/3 top-0 bottom-0 w-[1px] bg-stone-100" />
+                  <div className="hidden md:block absolute left-2/3 top-0 bottom-0 w-[1px] bg-stone-100" />
+
                   {/* Column 1: Facts */}
-                  <div className="py-12 md:pr-12">
+                  <div className="py-12 md:pr-12 border-b md:border-b-0 border-stone-100">
                       <h4 className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-6">Project Data</h4>
                       <div className="space-y-4">
                           <div className="flex justify-between items-baseline">
@@ -95,7 +106,7 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onClose }
                   </div>
 
                   {/* Column 2: Services */}
-                  <div className="py-12 md:px-12">
+                  <div className="py-12 md:px-12 border-b md:border-b-0 border-stone-100">
                       <h4 className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-6">Scope of Work</h4>
                       <ul className="space-y-2">
                           {project.services?.map((s, i) => (
@@ -156,6 +167,17 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onClose }
           </div>
       </div>
 
+      {/* --- 3.5. INTERACTIVE TRANSFORMATION (NEW) --- */}
+      {project.beforeAfter && (
+          <div className="container mx-auto px-6 max-w-7xl mb-32">
+              <BeforeAfter 
+                  beforeImage={project.beforeAfter.beforeImage} 
+                  afterImage={project.beforeAfter.afterImage} 
+                  label={project.beforeAfter.label}
+              />
+          </div>
+      )}
+
       {/* --- 4. SEQUENCED GALLERY --- */}
       <div className="space-y-6 md:space-y-12 mb-32">
           {/* Image 1: Wide Hero 2 */}
@@ -208,14 +230,21 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onClose }
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                       {project.craftDetails.map((detail, idx) => (
-                          <div key={idx} className="group">
+                          <motion.div 
+                              key={idx} 
+                              initial={{ opacity: 0, y: 20 }} 
+                              whileInView={{ opacity: 1, y: 0 }} 
+                              transition={{ delay: idx * 0.1 }}
+                              viewport={{ once: true }}
+                              className="group"
+                          >
                               <div className="aspect-square overflow-hidden bg-stone-800 mb-4">
                                   <img src={detail.image} alt={detail.caption} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" />
                               </div>
                               <p className="text-xs text-stone-400 uppercase tracking-wide leading-relaxed border-l border-bronze-500 pl-3">
                                   {detail.caption}
                               </p>
-                          </div>
+                          </motion.div>
                       ))}
                   </div>
               </div>
@@ -228,19 +257,22 @@ export const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onClose }
                 <p className="text-stone-500 text-xs uppercase tracking-widest mb-6">End of Case Study</p>
                 <h2 className="font-serif text-4xl md:text-6xl mb-12">Inspired?</h2>
                 <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-                    <button 
-                        onClick={onClose} 
+                    <motion.button 
+                        onClick={onClose}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         className="px-10 py-4 border border-stone-700 hover:border-white text-white uppercase tracking-widest text-xs font-bold transition-colors min-w-[200px]"
                     >
                         Return to Portfolio
-                    </button>
-                    <a 
-                        href="#contact"
-                        onClick={onClose}
-                        className="px-10 py-4 bg-bronze-500 hover:bg-bronze-600 text-white uppercase tracking-widest text-xs font-bold transition-colors min-w-[200px] flex items-center justify-center gap-2"
+                    </motion.button>
+                    <motion.button 
+                        onClick={onContact}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="px-10 py-4 bg-bronze-500 hover:bg-bronze-600 text-white uppercase tracking-widest text-xs font-bold transition-colors min-w-[200px] flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-bronze-900/20"
                     >
                         Start Your Project <ArrowRight size={14} />
-                    </a>
+                    </motion.button>
                 </div>
             </div>
       </div>
