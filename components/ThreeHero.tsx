@@ -5,7 +5,7 @@ import { Environment, SoftShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { useArt } from '../context/ArtContext';
 
-// --- 1. THE LIQUID PAINT WALL (PROCEDURAL) ---
+// --- 1. THE DYNAMIC LIQUID WALL ---
 const LiquidWall = () => {
   const meshRef = useRef<THREE.Mesh>(null);
   const { mode, config } = useArt();
@@ -13,11 +13,10 @@ const LiquidWall = () => {
   // Geometry settings
   const width = 12;
   const height = 16;
-  // Optimized segments for performance vs visual quality
   const segmentsW = 100; 
   const segmentsH = 100;
 
-  // Create geometry with vertex colors if needed
+  // Generate geometry with procedural vertex colors based on palette
   const geometry = useMemo(() => {
     const geo = new THREE.PlaneGeometry(width, height, segmentsW, segmentsH);
 
@@ -26,23 +25,20 @@ const LiquidWall = () => {
         const colors = new Float32Array(count * 3);
         const pos = geo.attributes.position;
         
-        // Define a vibrant, architectural paint palette
-        const palette = [
-            new THREE.Color('#E74C3C'), // Vivid Red
-            new THREE.Color('#3498DB'), // Blue
-            new THREE.Color('#F1C40F'), // Yellow
-            new THREE.Color('#9B59B6'), // Purple
-            new THREE.Color('#1ABC9C'), // Teal
-            new THREE.Color('#F7F4F0'), // Off-white
-        ];
+        // Generate a dynamic palette based on user selection
+        const c1 = new THREE.Color(config.colorPrimary);
+        const c2 = new THREE.Color(config.colorSecondary);
+        const c3 = new THREE.Color(config.colorPrimary).offsetHSL(0.1, 0, 0); // Analogous
+        const c4 = new THREE.Color('#F7F4F0'); // Off-white base
+        
+        const palette = [c1, c2, c3, c4];
 
         for (let i = 0; i < count; i++) {
              const x = pos.getX(i);
              // Create "lanes" of color
-             // Normalize x and map to palette index
              const nX = (x + width/2) / width;
-             const laneNoise = Math.sin(x * 0.5) * 0.1; // Slight wavy lane edges
-             const laneIndex = Math.floor((nX + laneNoise) * 8); // 8 lanes
+             const laneNoise = Math.sin(x * 0.5) * 0.1; 
+             const laneIndex = Math.floor((nX + laneNoise) * 8); 
              const color = palette[Math.abs(laneIndex) % palette.length];
              
              colors[i * 3] = color.r;
@@ -53,13 +49,12 @@ const LiquidWall = () => {
     }
     
     return geo;
-  }, [mode]); // Re-generate when mode switches
+  }, [mode, config.colorPrimary, config.colorSecondary]); // Re-generate when colors/mode change
 
-  // Generate random offsets for each vertex to break repetition
+  // Random offsets for turbulence
   const vertexData = useMemo(() => {
     const count = geometry.attributes.position.count;
     const randomOffsets = new Float32Array(count);
-    
     for (let i = 0; i < count; i++) {
       randomOffsets[i] = Math.random() * Math.PI * 2;
     }
@@ -78,30 +73,19 @@ const LiquidWall = () => {
       const x = originalPos[ix];
       const y = originalPos[ix + 1];
       
-      // 1. CONFIGURABLE GRAVITY FLOW
-      // config.flowSpeed controls how fast the paint slides down
-      // 0.15 is base speed
       const flowTime = time * 0.15 * config.flowSpeed; 
 
-      // 2. PROCEDURAL NOISE LAYERS
-      // config.viscosity changes the 'scale' or frequency of the waves
-      // config.turbulence changes the 'amplitude' of the chaotic noise
-      
-      // Layer A: Large Swells
       const largeSwell = Math.sin(x * 0.62 * config.viscosity + flowTime) * 
                          Math.cos(y * 0.27 * config.viscosity + flowTime) * 0.5;
 
-      // Layer B: Rivulets (Vertical streaks)
-      // Paint mode might want distincter rivulets
       const rivuletFreq = mode === 'paint' ? 4.0 : 2.5;
       const rivulets = Math.sin(x * rivuletFreq * config.viscosity + randomOffsets[i]) * 
                        Math.sin((y + flowTime * 1.5) * 0.5);
 
-      // Layer C: Surface Turbulence
       const turbulence = Math.sin((x * 4.0) + (y * 4.0) + time) * 0.05 * config.turbulence; 
 
-      // Combine
-      const combinedZ = largeSwell + (rivulets * 0.8) + turbulence;
+      // Apply Displacement Scale
+      const combinedZ = (largeSwell + (rivulets * 0.8) + turbulence) * config.displacementScale;
       
       position.setZ(i, combinedZ);
     }
@@ -109,6 +93,9 @@ const LiquidWall = () => {
     position.needsUpdate = true;
     meshRef.current.geometry.computeVertexNormals();
   });
+
+  // Decide color prop
+  const materialColor = mode === 'paint' ? undefined : config.colorPrimary;
 
   return (
     <mesh 
@@ -119,29 +106,19 @@ const LiquidWall = () => {
       receiveShadow
       castShadow
     >
-      {mode === 'gold' ? (
-          <meshPhysicalMaterial 
-            color="#B59457" 
-            roughness={0.15} 
-            metalness={0.7} 
-            clearcoat={1.0} 
-            clearcoatRoughness={0.1}
-            reflectivity={1}
-            envMapIntensity={1.2}
-            side={THREE.DoubleSide}
-          />
-      ) : (
-          <meshPhysicalMaterial 
-            vertexColors={true} // Enable per-vertex coloring
-            roughness={0.2} 
-            metalness={0.1} // Paint is less metallic, more glossy
-            clearcoat={1.0} // High gloss wet paint
-            clearcoatRoughness={0.2}
-            reflectivity={0.5}
-            envMapIntensity={1.0}
-            side={THREE.DoubleSide}
-          />
-      )}
+      <meshPhysicalMaterial 
+        color={materialColor}
+        vertexColors={mode === 'paint'}
+        roughness={config.roughness} 
+        metalness={config.metalness} 
+        clearcoat={config.clearcoat} 
+        clearcoatRoughness={0.1}
+        iridescence={config.iridescence}
+        iridescenceIOR={1.3}
+        reflectivity={1}
+        envMapIntensity={1.2}
+        side={THREE.DoubleSide}
+      />
     </mesh>
   );
 };
