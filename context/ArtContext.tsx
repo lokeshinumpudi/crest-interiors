@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { generateArtConfigFromPrompt } from '../services/ai';
 
 export type ArtMode = 'gold' | 'paint' | 'noir' | 'concrete' | 'iridescent';
 
@@ -27,6 +28,8 @@ interface ArtContextType {
   config: ArtConfig;
   updateConfig: (key: keyof ArtConfig, value: number | string) => void;
   resetToPreset: () => void;
+  generateArt: (prompt: string) => Promise<void>;
+  isGenerating: boolean;
 }
 
 const PRESETS: Record<ArtMode, ArtConfig> = {
@@ -62,6 +65,7 @@ const ArtContext = createContext<ArtContextType | undefined>(undefined);
 export const ArtProvider = ({ children }: { children: ReactNode }) => {
   const [mode, setModeState] = useState<ArtMode>('gold');
   const [config, setConfig] = useState<ArtConfig>(PRESETS.gold);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const setMode = (m: ArtMode) => {
       setModeState(m);
@@ -76,8 +80,24 @@ export const ArtProvider = ({ children }: { children: ReactNode }) => {
       setConfig(PRESETS[mode]);
   };
 
+  const generateArt = async (prompt: string) => {
+    setIsGenerating(true);
+    try {
+      const newConfig = await generateArtConfigFromPrompt(prompt);
+      if (newConfig) {
+        setConfig(newConfig);
+        // Switch to 'paint' mode to allow custom colors and vertex shading to shine
+        setModeState('paint');
+      }
+    } catch (error) {
+      console.error("Failed to generate art config", error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
-    <ArtContext.Provider value={{ mode, setMode, config, updateConfig, resetToPreset }}>
+    <ArtContext.Provider value={{ mode, setMode, config, updateConfig, resetToPreset, generateArt, isGenerating }}>
       {children}
     </ArtContext.Provider>
   );

@@ -20,6 +20,7 @@ const LiquidWall = () => {
   const geometry = useMemo(() => {
     const geo = new THREE.PlaneGeometry(width, height, segmentsW, segmentsH);
 
+    // Only generate color lanes if in 'paint' mode (which AI mode switches to)
     if (mode === 'paint') {
         const count = geo.attributes.position.count;
         const colors = new Float32Array(count * 3);
@@ -73,6 +74,7 @@ const LiquidWall = () => {
       const x = originalPos[ix];
       const y = originalPos[ix + 1];
       
+      // Scale flowSpeed to be reasonable
       const flowTime = time * 0.15 * config.flowSpeed; 
 
       const largeSwell = Math.sin(x * 0.62 * config.viscosity + flowTime) * 
@@ -84,7 +86,7 @@ const LiquidWall = () => {
 
       const turbulence = Math.sin((x * 4.0) + (y * 4.0) + time) * 0.05 * config.turbulence; 
 
-      // Apply Displacement Scale
+      // Apply Displacement Scale from config
       const combinedZ = (largeSwell + (rivulets * 0.8) + turbulence) * config.displacementScale;
       
       position.setZ(i, combinedZ);
@@ -94,7 +96,7 @@ const LiquidWall = () => {
     meshRef.current.geometry.computeVertexNormals();
   });
 
-  // Decide color prop
+  // Decide color prop. In 'paint' mode we use vertex colors, so material color is undefined or white.
   const materialColor = mode === 'paint' ? undefined : config.colorPrimary;
 
   return (

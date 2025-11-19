@@ -48,11 +48,11 @@ export const ArtSettings: React.FC = () => {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-stone-100 bg-stone-50">
-                <button onClick={() => setActiveTab('style')} className={`flex-1 py-3 text-xs uppercase font-bold transition-colors flex items-center justify-center gap-1 ${activeTab === 'style' ? 'bg-white text-bronze-500 border-b-2 border-bronze-500' : 'text-stone-400'}`}><Layers size={14}/> Style</button>
-                <button onClick={() => setActiveTab('surface')} className={`flex-1 py-3 text-xs uppercase font-bold transition-colors flex items-center justify-center gap-1 ${activeTab === 'surface' ? 'bg-white text-bronze-500 border-b-2 border-bronze-500' : 'text-stone-400'}`}><Sliders size={14}/> Surface</button>
-                <button onClick={() => setActiveTab('dynamics')} className={`flex-1 py-3 text-xs uppercase font-bold transition-colors flex items-center justify-center gap-1 ${activeTab === 'dynamics' ? 'bg-white text-bronze-500 border-b-2 border-bronze-500' : 'text-stone-400'}`}><Zap size={14}/> Flow</button>
-                <button onClick={() => setActiveTab('color')} className={`flex-1 py-3 text-xs uppercase font-bold transition-colors flex items-center justify-center gap-1 ${activeTab === 'color' ? 'bg-white text-bronze-500 border-b-2 border-bronze-500' : 'text-stone-400'}`}><Palette size={14}/> Color</button>
+            <div className="flex border-b border-stone-100 bg-stone-50 overflow-x-auto no-scrollbar">
+                <button onClick={() => setActiveTab('style')} className={`flex-1 py-3 px-2 text-xs uppercase font-bold transition-colors flex items-center justify-center gap-1 ${activeTab === 'style' ? 'bg-white text-bronze-500 border-b-2 border-bronze-500' : 'text-stone-400'}`}><Layers size={14}/> Style</button>
+                <button onClick={() => setActiveTab('surface')} className={`flex-1 py-3 px-2 text-xs uppercase font-bold transition-colors flex items-center justify-center gap-1 ${activeTab === 'surface' ? 'bg-white text-bronze-500 border-b-2 border-bronze-500' : 'text-stone-400'}`}><Sliders size={14}/> Surf</button>
+                <button onClick={() => setActiveTab('dynamics')} className={`flex-1 py-3 px-2 text-xs uppercase font-bold transition-colors flex items-center justify-center gap-1 ${activeTab === 'dynamics' ? 'bg-white text-bronze-500 border-b-2 border-bronze-500' : 'text-stone-400'}`}><Zap size={14}/> Flow</button>
+                <button onClick={() => setActiveTab('color')} className={`flex-1 py-3 px-2 text-xs uppercase font-bold transition-colors flex items-center justify-center gap-1 ${activeTab === 'color' ? 'bg-white text-bronze-500 border-b-2 border-bronze-500' : 'text-stone-400'}`}><Palette size={14}/> Col</button>
             </div>
 
             {/* Content */}
